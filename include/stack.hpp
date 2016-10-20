@@ -16,8 +16,7 @@ protected:
 	size_t _count;
 };
 
-//__________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________
+
 
 
 template <typename T1, typename T2>
@@ -39,25 +38,23 @@ void destroy(FwdIter first, FwdIter last) noexcept
 	}
 }
 
-template <typename T>// êîíñòðóêòîð àëëîêàòîðà
+template <typename T>
 allocator<T>::allocator(size_t size) : _array(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), _size(0), _count(size) {
 };
 
-template <typename T>//äåñòðóêòîð àëëîêàòîðà
+template <typename T>
 allocator<T>::~allocator() {
 operator delete(_array);
 };
 
-template <typename T>//swap allocator
+template <typename T>
 auto allocator<T>::swap(allocator& other)->void {
 	std::swap(_array, other._array);
 	std::swap(_size, other._size);
 	std::swap(_count, other._count);
 };
 
-//__________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________
- 
+
 template <typename T>
 class stack : private allocator<T>
 {
@@ -74,8 +71,6 @@ public:
 
 };
 
-//__________________________________________________________________________________________________________________
-//__________________________________________________________________________________________________________________
 
 
 
@@ -101,9 +96,9 @@ stack<T>::stack()  {};
 
 
 
-template <typename T>//âñòàâêà ýëåìåíòà â ñòýê 
+template <typename T>
 auto stack<T>::push(T const &val)->void {
-	if (allocator<T>::_count == allocator<T>::_size) {//óâåëè÷èâàåò ïàìÿòü 
+	if (allocator<T>::_count == allocator<T>::_size) {
 		size_t size = allocator<T>::_size * 2 + (allocator<T>::_size == 0);
 		T *tmp = mem_copy(allocator<T>::_count, size, allocator<T>::_array);
 		delete[] allocator<T>::_array;
@@ -115,14 +110,14 @@ auto stack<T>::push(T const &val)->void {
 }
 
 
-template <typename T>//êîíñòðóêòîð êîïèðîâàíèÿ
+template <typename T>
 stack<T>::stack(stack const &tmp) {
 	allocator<T>::_count = tmp._count;
 	allocator<T>::_array = mem_copy(tmp._count, tmp._size, tmp._array);
 	allocator<T>::_size = tmp._size;
 };
 
-template <typename T>//ïåðåãðóçêà îïåðàòîðà ïðèñâàèâàíèÿ 
+template <typename T>
 auto stack<T>::operator=(const stack &tmp)->stack& {
 	if (this != &tmp) {
 		T* cp = mem_copy(tmp._count, tmp._size, tmp._array);
@@ -135,19 +130,19 @@ auto stack<T>::operator=(const stack &tmp)->stack& {
 }
 
 
-template <typename T>//âîçâðàùàåì _count
+template <typename T>
 auto stack<T>::count() const noexcept->size_t {
 	return allocator<T>::_count;
 }
 
-template <typename T>// óìåíüøåíèå _count 
+template <typename T>
 auto stack<T>::pop()->void {
 	if (allocator<T>::_count == 0) throw std::logic_error("Empty!");
 	destroy(allocator<T>::_array +allocator<T>::_count);
 	--allocator<T>::_count;
 }
 
-template <typename T>//óäàëåíèå ýëåìåíòà
+template <typename T>
 auto stack<T>::top() const->T& {
 	if (allocator<T>::_count == 0) throw std::logic_error("Empty!");
 	return allocator<T>::_array[allocator<T>::_count - 1];
